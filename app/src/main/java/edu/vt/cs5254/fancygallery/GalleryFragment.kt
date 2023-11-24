@@ -1,13 +1,14 @@
 package edu.vt.cs5254.fancygallery
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import edu.vt.cs5254.fancygallery.databinding.FragmentGalleryBinding
 import kotlinx.coroutines.launch
 
@@ -16,6 +17,8 @@ class GalleryFragment : Fragment(){
     private var _binding: FragmentGalleryBinding? = null
     private val binding
         get() = checkNotNull(_binding){"FGalleryBinding is null"}
+
+    private val vm: GalleryViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,11 +32,10 @@ class GalleryFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val response = PhotoRepository().fetchPhotos()
-                Log.d(TAG, "Response received: $response")
-            } catch (ex: Exception) {
-                Log.e(TAG, "Failed to fetch gallery items", ex)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.galleryItems.collect { items ->
+                    binding.photoGrid.adapter = GalleryItemAdapter(items)
+                }
             }
         }
     }
