@@ -8,11 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import edu.vt.cs5254.fancygallery.api.FlickrApi
 import edu.vt.cs5254.fancygallery.databinding.FragmentGalleryBinding
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class GalleryFragment : Fragment(){
 
@@ -33,7 +30,7 @@ class GalleryFragment : Fragment(){
 
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val response = PhotoRepository().fetchContents()
+            val response = PhotoRepository().fetchPhotos()
             Log.d(TAG, "Response received: $response")
         }
     }
