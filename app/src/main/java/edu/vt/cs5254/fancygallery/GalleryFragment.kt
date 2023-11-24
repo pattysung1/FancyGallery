@@ -1,5 +1,6 @@
 package edu.vt.cs5254.fancygallery
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +37,10 @@ class GalleryFragment : Fragment(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.galleryItems.collect { items ->
-                    binding.photoGrid.adapter = GalleryItemAdapter(items)
+                    binding.photoGrid.adapter = GalleryItemAdapter(items){ photoPageUri ->
+                        val intent = Intent(Intent.ACTION_VIEW, photoPageUri)
+                        startActivity(intent)
+                    }
                 }
             }
         }
