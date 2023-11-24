@@ -1,5 +1,7 @@
 package edu.vt.cs5254.fancygallery
 
+import android.nfc.Tag
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +15,7 @@ class GalleryItemHolder(
     private val binding: ListItemGalleryBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(galleryItem: GalleryItem) {
+        Log.d("print",galleryItem.url)
         binding.itemImageView.load(galleryItem.url){
             placeholder(R.drawable.ic_placeholder)
             diskCachePolicy(CachePolicy.DISABLED)

@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.GridLayoutManager
 import edu.vt.cs5254.fancygallery.databinding.FragmentGalleryBinding
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,7 @@ class GalleryFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGalleryBinding.inflate(inflater, container,false)
+        binding.photoGrid.layoutManager = GridLayoutManager(context, 3)
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
