@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import edu.vt.cs5254.fancygallery.databinding.FragmentGalleryBinding
 import kotlinx.coroutines.launch
@@ -38,8 +39,9 @@ class GalleryFragment : Fragment(){
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.galleryItems.collect { items ->
                     binding.photoGrid.adapter = GalleryItemAdapter(items){ photoPageUri ->
-                        val intent = Intent(Intent.ACTION_VIEW, photoPageUri)
-                        startActivity(intent)
+                        findNavController().navigate(
+                            GalleryFragmentDirections.showPhoto(photoPageUri)
+                        )
                     }
                 }
             }
