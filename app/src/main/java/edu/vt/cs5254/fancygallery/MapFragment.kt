@@ -1,10 +1,12 @@
 package edu.vt.cs5254.fancygallery
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.preference.PreferenceManager
 import edu.vt.cs5254.fancygallery.databinding.FragmentMapBinding
@@ -20,6 +22,8 @@ class MapFragment: Fragment() {
         get() = checkNotNull(_binding) {"FragmentMapBinding null"}
 
     private val vm: MapViewModel by viewModels()
+    private val activityVM : MainViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,5 +80,10 @@ class MapFragment: Fragment() {
             controller.setZoom(vm.zoomLevel)
             controller.setCenter(vm.mapCenter)
         }
+
+        Log.w(
+            "SHARED ACTIVITY VM TEST",
+            "Found ${activityVM.galleryItems.value.size} gallery items!!!"
+            )
     }
 }

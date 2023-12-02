@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "PhotoGalleryViewModel"
 
-class GalleryViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
     private val photoRepository = PhotoRepository()
 
     private val _galleryItems: MutableStateFlow<List<GalleryItem>> =
