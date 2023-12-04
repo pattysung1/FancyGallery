@@ -10,10 +10,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.preference.PreferenceManager
 import edu.vt.cs5254.fancygallery.databinding.FragmentMapBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 
 class MapFragment: Fragment() {
 
@@ -23,6 +29,9 @@ class MapFragment: Fragment() {
 
     private val vm: MapViewModel by viewModels()
     private val activityVM : MainViewModel by activityViewModels()
+
+    //Add CoroutineScope
+    private var mapCoroutineScope: CoroutineScope? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,15 +67,38 @@ class MapFragment: Fragment() {
                 CustomZoomButtonsController.Visibility.ALWAYS
             )
         }
-        val count = activityVM.galleryItems.value.count {
-            it.latitude != 0.0 && it.longitude != 0.0
+//        activityVM.galleryItems.value.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+//            .forEach { galleryItem ->
+//                val marker = Marker(binding.mapView).apply {
+//                    position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
+//                    title = galleryItem.title
+//                }
+//                binding.mapView.overlays.add(marker)
+//            }
+        // 创建协程作用域
+        mapCoroutineScope = CoroutineScope(Dispatchers.Main)
+
+        // 在协程作用域内观察 StateFlow
+        mapCoroutineScope?.launch {
+            activityVM.galleryItems.collect { items ->
+                // 这里可以放置您的标记代码
+                val filteredItems = items.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+                for (galleryItem in filteredItems) {
+                    val marker = Marker(binding.mapView).apply {
+                        position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
+                        title = galleryItem.title
+                    }
+                    binding.mapView.overlays.add(marker)
+                }
+            }
         }
-        Log.w("MAPFRAGMENT", "GOT $count items with valid GEO!")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        // 取消协程作用域
+        mapCoroutineScope?.cancel()
     }
 
     override fun onPause() {
