@@ -20,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -133,14 +132,31 @@ class MapFragment: Fragment() {
                 items.filter { it.latitude != 0.0 && it.longitude != 0.0 }
                     .forEach { galleryItem ->
                         val photoDrawable = loadDrawableFromUrl(galleryItem.url)
-                        photoDrawable?.let { drawable ->
+                        photoDrawable?.let { it ->
                             val marker = Marker(binding.mapView).apply {
                                 position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
                                 title = galleryItem.title
-                                icon = drawable
+                                icon = it
                                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                                relatedObject = galleryItem
+                                setOnMarkerClickListener { marker, mapView ->
+                                    mapView.apply {
+                                        controller.animateTo(marker.position)
+                                        overlays.remove(marker)
+                                        overlays.add(marker)
+                                    }
+                                    if (marker.isInfoWindowShown) {
+                                        val item = marker.relatedObject as GalleryItem
+                                        findNavController().navigate(
+                                            MapFragmentDirections.showPhotoFromMarker(item.photoPageUri)
+                                        )
+                                    } else {
+                                        showInfoWindow()
+                                    }
+                                    true
+                                }
                             }
-                            _binding?.mapView?.overlays?.add(marker)
+                            binding.mapView.overlays.add(marker)
                         }
                     }
                 _binding?.mapView?.invalidate()
