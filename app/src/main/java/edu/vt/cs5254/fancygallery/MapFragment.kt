@@ -58,6 +58,10 @@ class MapFragment: Fragment() {
                 CustomZoomButtonsController.Visibility.ALWAYS
             )
         }
+        val count = activityVM.galleryItems.value.count {
+            it.latitude != 0.0 && it.longitude != 0.0
+        }
+        Log.w("MAPFRAGMENT", "GOT $count items with valid GEO!")
     }
 
     override fun onDestroyView() {
