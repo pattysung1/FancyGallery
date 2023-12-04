@@ -72,29 +72,6 @@ class GalleryFragment : Fragment(){
         }, viewLifecycleOwner)
 
     }
-////ADD Menu Gallery
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.reload_menu, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.reload_menu -> {
-//                // 执行清除 Coil 图像加载器缓存的操作
-//                vm.reloadGalleryItems()
-//                return true
-//            }
-//            else -> return super.onOptionsItemSelected(item)
-//        }
-//    }
-//    private fun clearImageLoaderCache() {
-//        val imageLoader = Coil.imageLoader(requireContext())
-//        imageLoader.memoryCache?.clear()
-//    }
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true) // 允许Fragment显示菜单
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
