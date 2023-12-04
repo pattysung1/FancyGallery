@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import edu.vt.cs5254.fancygallery.api.GalleryItem
 import edu.vt.cs5254.fancygallery.databinding.FragmentMapBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -127,20 +129,22 @@ class MapFragment: Fragment() {
         //在协程作用域内观察 StateFlow
         mapCoroutineScope?.launch {
             // 在协程作用域内调用 loadDrawableFromUrl
-            activityVM.galleryItems.value.filter { it.latitude != 0.0 && it.longitude != 0.0 }
-                .forEach { galleryItem ->
-                    val photoDrawable = loadDrawableFromUrl(galleryItem.url)
-                    photoDrawable?.let { drawable ->
-                        val marker = Marker(binding.mapView).apply {
-                            position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
-                            title = galleryItem.title
-                            icon = drawable
-                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            activityVM.galleryItems.collect { items ->
+                items.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+                    .forEach { galleryItem ->
+                        val photoDrawable = loadDrawableFromUrl(galleryItem.url)
+                        photoDrawable?.let { drawable ->
+                            val marker = Marker(binding.mapView).apply {
+                                position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
+                                title = galleryItem.title
+                                icon = drawable
+                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                            }
+                            _binding?.mapView?.overlays?.add(marker)
                         }
-                        _binding?.mapView?.overlays?.add(marker)
                     }
-                }
-            _binding?.mapView?.invalidate()
+                _binding?.mapView?.invalidate()
+            }
         }
     }
 

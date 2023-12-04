@@ -18,7 +18,11 @@
         android:id="@+id/map_fragment"
         tools:layout="@layout/fragment_map"
         android:name="edu.vt.cs5254.fancygallery.MapFragment"
-        android:label="MapFragment" />
+        android:label="MapFragment" >
+        <action
+            android:id="@+id/action_map_fragment_to_photo_page_fragment"
+            app:destination="@id/photo_page_fragment" />
+    </fragment>
     <fragment
         android:id="@+id/photo_page_fragment"
         android:name="edu.vt.cs5254.fancygallery.PhotoPageFragment"
