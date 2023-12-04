@@ -1,5 +1,6 @@
 package edu.vt.cs5254.fancygallery
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,11 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.preference.PreferenceManager
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import edu.vt.cs5254.fancygallery.databinding.FragmentMapBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -75,22 +80,67 @@ class MapFragment: Fragment() {
 //                }
 //                binding.mapView.overlays.add(marker)
 //            }
-        // 创建协程作用域
-        mapCoroutineScope = CoroutineScope(Dispatchers.Main)
+
+
+//        // 创建协程作用域
+//        mapCoroutineScope = CoroutineScope(Dispatchers.Main)
 
         // 在协程作用域内观察 StateFlow
+//        mapCoroutineScope?.launch {
+//            activityVM.galleryItems.collect { items ->
+//                // 这里可以放置您的标记代码
+//                val filteredItems = items.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+//                for (galleryItem in filteredItems) {
+//                    val marker = Marker(binding.mapView).apply {
+//                        position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
+//                        title = galleryItem.title
+//                    }
+//                    binding.mapView.overlays.add(marker)
+//                }
+//            }
+//        }
+
+
+//        // 创建协程作用域
+//        mapCoroutineScope = CoroutineScope(Dispatchers.Main)
+//        //在协程作用域内观察 StateFlow
+//        mapCoroutineScope?.launch {
+//        // 在协程作用域内调用 loadDrawableFromUrl
+//            activityVM.galleryItems.value.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+//                .forEach { galleryItem ->
+//                    val marker = Marker(binding.mapView).apply {
+//                        position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
+//                        title = galleryItem.title
+//                    }
+//                    binding.mapView.overlays.add(marker)
+//
+//                    val photoDrawable = withContext(Dispatchers.IO) {
+//                        loadDrawableFromUrl(galleryItem.url)
+//                    }
+//                    photoDrawable?.let { drawable ->
+//                        marker.icon = drawable
+//                    }
+//                }
+//        }
+        // 创建协程作用域
+        mapCoroutineScope = CoroutineScope(Dispatchers.Main)
+        //在协程作用域内观察 StateFlow
         mapCoroutineScope?.launch {
-            activityVM.galleryItems.collect { items ->
-                // 这里可以放置您的标记代码
-                val filteredItems = items.filter { it.latitude != 0.0 && it.longitude != 0.0 }
-                for (galleryItem in filteredItems) {
-                    val marker = Marker(binding.mapView).apply {
-                        position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
-                        title = galleryItem.title
+            // 在协程作用域内调用 loadDrawableFromUrl
+            activityVM.galleryItems.value.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+                .forEach { galleryItem ->
+                    val photoDrawable = loadDrawableFromUrl(galleryItem.url)
+                    photoDrawable?.let { drawable ->
+                        val marker = Marker(binding.mapView).apply {
+                            position = GeoPoint(galleryItem.latitude, galleryItem.longitude)
+                            title = galleryItem.title
+                            icon = drawable
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                        }
+                        _binding?.mapView?.overlays?.add(marker)
                     }
-                    binding.mapView.overlays.add(marker)
                 }
-            }
+            _binding?.mapView?.invalidate()
         }
     }
 
@@ -99,6 +149,20 @@ class MapFragment: Fragment() {
         _binding = null
         // 取消协程作用域
         mapCoroutineScope?.cancel()
+    }
+    private suspend fun loadDrawableFromUrl(url: String): Drawable? {
+        return context?.let {
+            val loader = it.imageLoader
+            val request = ImageRequest.Builder(requireContext())
+                .data(url)
+                .build()
+            return try {
+                val result = loader.execute(request)
+                (result as SuccessResult).drawable
+            } catch (ex: Exception) {
+                null
+            }
+        }
     }
 
     override fun onPause() {
