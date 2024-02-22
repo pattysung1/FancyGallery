@@ -1,4 +1,4 @@
-🌟Features and Technologies🌟
+### 🌟Features and Technologies🌟
 
 1. Download and display curated image collections from Flickr.
     - Utilize the Flickr API to retrieve image data and metadata.
@@ -8,3 +8,5 @@
     - Utilize data processing libraries to handle data retrieved from the Flickr API, extracting and analyzing image metadata such as coordinates.
 3. Enable users to click on any image (whether in the grid or on the map) to view the corresponding Flickr webpage.
     - Implement functionality to navigate users to the Flickr webpage for the clicked image.
+
+![FancyGallery](https://github.com/pattysung1/FancyGallery/assets/113825171/eb447e70-a4c0-4675-81c3-3c376145ba0f)
